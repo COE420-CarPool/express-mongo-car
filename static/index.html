@@ -6,21 +6,33 @@
 		<title>Document</title>
 	</head>
 	<body>
+		<p>Go to login <a href="login.html">HERE</a></p>
 		<h1>Registration</h1>
-		<form id="reg-form">
-			<input type="text" autocomplete="off" id="username" placeholder="Username" />
-			<input type="password" autocomplete="off" id="password" placeholder="Password" />
+		<form id="form-group">
+			<input type="email" autocomplete="on" id="email" pattern="^[bg0-9]+@aus\.edu" title="Use an AUS student email! " name="email" placeholder="email" required />
+			
+			<input type="text" id="name" name="name" placeholder="Enter your name" required/>
+			<label for="userType">I am a:</label>
+			<select id="userType" name="userType">
+			<option value="rider">rider</option>
+			<option value="driver">driver</option>
+			</select>
+			<input type="tel" id="phone" name="phone" placeholder="Enter your phone number" pattern="[0][5][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" title="Format: 05xxxxxxx" required/>
+			<input type="password" name="password" autocomplete="off" id="password" placeholder="Password" required/>
 			<input type="submit" value="Submit Form" />
 		</form>
 
 		<script>
-			const form = document.getElementById('reg-form')
+			const form = document.getElementById('form-group')
 			form.addEventListener('submit', registerUser)
 
 			async function registerUser(event) {
 				event.preventDefault()
-				const username = document.getElementById('username').value
+				const email = document.getElementById('email').value
+				const name = document.getElementById('name').value
+				const phone = document.getElementById('phone').value
 				const password = document.getElementById('password').value
+				const userType = document.getElementById('userType').value
 
 				const result = await fetch('/api/register', {
 					method: 'POST',
@@ -28,7 +40,10 @@
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify({
-						username,
+						email,
+						name,
+						phone,
+						userType,
 						password
 					})
 				}).then((res) => res.json())
@@ -36,8 +51,10 @@
 				if (result.status === 'ok') {
 					// everythign went fine
 					alert('Success')
+					return window.location.href = "login.html"
+					
 				} else {
-					alert(result.error)
+					alert('Email already exists. Please login with it.')
 				}
 			}
 		</script>
