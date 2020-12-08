@@ -3,21 +3,26 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const User = require('./model/user')
+const Message = require('./model/message')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const dateTime = require("simple-datetime-formater");
 
 
+//const io = require("socket.io");
 const JWT_SECRET = 'sdjkfh8923yhjdksbfma@#*(&@*!^#&@bhjb2qiuhesdbhjdsfg839ujkdhfjk'
-
-mongoose.connect('mongodb://localhost:27017/login-app-db', {
+mongoose.connect('mongodb://localhost:27017/carPool', {
 	useNewUrlParser: true,
 	useUnifiedTopology: true,
 	useCreateIndex: true
 })
-
 const app = express()
 app.use('/', express.static(path.join(__dirname, 'static')))
 app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: false}))
+
+var http = require("http").Server(app);
+var io=require('socket.io')(http);
 
 
 app.post('/api/change-password', async (req, res) => {
@@ -64,6 +69,7 @@ app.post('/api/login', async (req, res) => {
 
 	else if (await bcrypt.compare(password, user.password)) {
 		// the email, password combination is successful
+
 		console.log("User logged in successfuly")
 		const token = jwt.sign(
 			{
@@ -72,8 +78,14 @@ app.post('/api/login', async (req, res) => {
 			},
 			JWT_SECRET
 		)
+		if (user.userType == "rider")
+		{
+		return res.json({ status: 'rider', data: token })
+		}
+		else if (user.userType == "driver")
+		{ return res.json({ status: 'driver', data: token })
+	     }
 		
-		return res.json({ status: 'ok', data: token })
 	}
 
 
@@ -115,6 +127,7 @@ app.post('/api/register', async (req, res) => {
 		
 	res.json({ status: 'ok' })
 		console.log('User created successfully: ', response)
+		
 	} catch (error) {
 		console.log('Email ALREADY EXISTS.');
 		console.log(error);
@@ -123,8 +136,59 @@ app.post('/api/register', async (req, res) => {
 		
 	}
 
-})
+}) 
 
-app.listen(9999, () => {
-	console.log('Server up at 9999')
-})
+//--------------------------------- MESSAGES now
+
+app.get('/messages', (req, res) => {
+	Message.find({},(err, messages)=> {
+	  res.send(messages);
+	  console.log("getting message")
+	})
+  })
+  
+  
+  app.get('/messages/:user', (req, res) => {
+	var user = req.params.user
+	Message.find({name: user},(err, messages)=> {
+	  res.send(messages);
+	  console.log("getting /messages/:user")
+	})
+  })
+  
+  
+  app.post('/messages', async (req, res) => {
+	  console.log("posting message")
+	try{
+	  var message = new Message(req.body);
+  
+	  var savedMessage = await message.save()
+		console.log('saved');
+  
+	  var censored = await Message.findOne({message:'badword'});
+		if(censored)
+		  await Message.remove({_id: censored.id})
+		else
+		  io.emit('message', req.body);
+		res.sendStatus(200);
+	}
+	catch (error){
+	  res.sendStatus(500);
+	  return console.log('error',error);
+	}
+	finally{
+	  console.log('Message Posted')
+	}
+  
+  })
+  
+
+  io.on('connection', () =>{
+	console.log('a user is connected')
+  })
+//------------
+
+var server = http.listen(9999, () => {
+	console.log('server is running on port', server.address().port);
+  });
+  

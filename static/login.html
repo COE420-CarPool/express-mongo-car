@@ -33,14 +33,26 @@
 					})
 				}).then((res) => res.json())
 
-				if (result.status === 'ok') {
+				 if (result.status === 'error'){
+					alert(result.error)
+				}
+				else if (result.status === 'rider') {
 					// everythign went fine
 					console.log('Got the token: ', result.data)
 					localStorage.setItem('token', result.data)
 					alert('Success')
-					return window.location.href = "findAsRider.html"
-				} else {
-					alert(result.error)
+				
+				return window.location.href = "find.html" 
+
+				}
+				else if (result.status === 'driver') {
+					// everythign went fine
+					console.log('Got the token: ', result.data)
+					localStorage.setItem('token', result.data)
+					alert('Success')
+				
+				return window.location.href = "makeAvailable.html" 
+
 				}
 			}
 		</script>
