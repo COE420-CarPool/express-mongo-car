@@ -4,10 +4,12 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const User = require('./model/user')
 const Message = require('./model/message')
+const Request = require('./model/request')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+var session = require('express-session')
 const dateTime = require("simple-datetime-formater");
-
+var MongoStore = require('connect-mongo')(session)
 
 //const io = require("socket.io");
 const JWT_SECRET = 'sdjkfh8923yhjdksbfma@#*(&@*!^#&@bhjb2qiuhesdbhjdsfg839ujkdhfjk'
@@ -23,6 +25,13 @@ app.use(bodyParser.urlencoded({extended: false}))
 
 var http = require("http").Server(app);
 var io=require('socket.io')(http);
+app.use(session({
+    name: 'session',
+    secret: "userSess",
+    resave: true,
+    saveUninitialized: true,
+    store: new MongoStore({ mongooseConnection: mongoose.connection })
+}));
 
 
 app.post('/api/change-password', async (req, res) => {
@@ -71,6 +80,8 @@ app.post('/api/login', async (req, res) => {
 		// the email, password combination is successful
 
 		console.log("User logged in successfuly")
+		req.session.isLoggedIn = true;
+		req.session.userId = user._id;
 		const token = jwt.sign(
 			{
 				id: user._id,
@@ -147,6 +158,34 @@ app.get('/messages', (req, res) => {
 	})
   })
   
+  app.post('/requestMatch', async (req, res) => {
+	if (req.session.isLoggedIn)
+	{ let user = await User.findOne ({_id : req.session.userId})
+	console.log('Rider requested Match: ' + user.name)
+	
+	var request = new Request();
+	
+		request.rider_id = user._id,
+		request.rider_email = user.email,
+		request.rider_name = user.name,
+		request.rider_phone = user.phone,
+		request.driver_id = req.body.creator_id,
+		request.driver_email = req.body.creator_email,
+		request.driver_phone = req.body.creator_phone,
+		request.driver_name = req.body.creator_name,
+		request.status = "pending";
+	  var request = await request.save()
+	  
+	}
+
+  })
+
+  app.get('/viewRequests', async (req, res) => {
+	Request.find({},(err, requests)=> {
+		res.send(requests);
+		console.log("getting requests")
+  })
+})
   
   app.get('/messages/:user', (req, res) => {
 	var user = req.params.user
@@ -159,9 +198,16 @@ app.get('/messages', (req, res) => {
   
   app.post('/messages', async (req, res) => {
 	  console.log("posting message")
+	  if (req.session.isLoggedIn) 
+	{
+		let user = await User.findOne({ _id: req.session.userId })
+		console.log(user)
 	try{
 	  var message = new Message(req.body);
-  
+		message.creator_id = user._id
+		message.creator_email = user.email
+		message.creator_name = user.name
+		message.creator_phone = user.phone
 	  var savedMessage = await message.save()
 		console.log('saved');
   
@@ -179,7 +225,7 @@ app.get('/messages', (req, res) => {
 	finally{
 	  console.log('Message Posted')
 	}
-  
+}
   })
   
 

@@ -1,15 +1,18 @@
 const mongoose = require('mongoose')
-//var uniqueValidator = require('mongoose-unique-validator')
+var uniqueValidator = require('mongoose-unique-validator')
 
 
 
 const MessageSchema = new mongoose.Schema (
     {
+        creator_id: {type:String, unique:true},
+        creator_name: {type:String},
+        creator_email: {type:String},
         destination: {type: String },
         seats:  {type: String },
         departure:  {type: String },
         pickup:  {type: String },
-        platenum:  {type: String, unique:true },
+        platenum:  {type: String },
         message :  {type: String },
         time : { type : Date, default: Date.now }
       },
@@ -21,7 +24,7 @@ const MessageSchema = new mongoose.Schema (
 
 
 
-//Message.plugin(uniqueValidator)
+MessageSchema.plugin(uniqueValidator)
 
 
 const model = mongoose.model('Message', MessageSchema)

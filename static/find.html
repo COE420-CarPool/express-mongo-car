@@ -19,35 +19,71 @@
 
    var socket = io();
     $(() => {
+       
       
         getMessages()
     })
 
     socket.on('message', addMessages)
+    socket.on('message', requestMatch)
 
     function addMessages(message){
-        $("#messages").append(`<h4> Going to ${message.destination} </h4> 
+
+      //  var clicker = "ID" + Math.random().toString(16).slice(2)
+     
+        
+        $("#messages").append(`
+        <div id=${message._id}>
+        <h4>Going to ${message.destination}</h4> 
         <p> Current Seat Capacity: ${message.seats} </p>
         <p> Departure time: ${message.departure} </p>
         <p> Meeting Point: ${message.pickup} </p>
         <p> Car Plate Number: ${message.platenum} </p>
         <p> Driver's message:${message.message} </p>
-        <p> Posted at:  ${message.time} </p>`)
-       // console.log(message)
-       setTimeout(addMessages, 1000);
+        <p> Posted at:  ${message.time} </p>
+        <p> Posted by:  ${message.creator_name} </p>
+        <p> Posted by (email):  ${message.creator_email} </p>
+        <p> Posted by (phone):  ${message.creator_phone} </p>
+        <button id="clicky" class="btn btn-success">${message._id}</button>
+        </div>
+        
+        `)
+$("#messsages").on('click', 'button', function() { console.log("crying")});
+        
+      //  $("#messages").querySelector(`div[id="${message._id}"] > button`)
+       // .addEventListener('click', () =>  console.log(message._id))
+         
+       /* function func(){
+        $('#messages').on('click','clicker', function () {
+           console.log(clicker)
+         requestMatch(message)
+        });
+        }*/
+    setTimeout(addMessages, 1000);
     }
 
- 
+   
+    //$("#match").click(()=>{console.log("CLICK TO MATCHHHHH")})
+    
+    function requestMatch(message) {
+        $.post('http://localhost:9999/requestMatch', message)
+    }
 
     function getMessages(){
       $.get('http://localhost:9999/messages', (data) => {
         data.forEach(addMessages);
+        for (i = 0; i < data.length; i++) {
+        console.log(data[i])
+
+
+}
       })
     }
 
     function sendMessage(message){
       $.post('http://localhost:9999/messages', message)
     }
+
 </script>
 </body>
 </html>

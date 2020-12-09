@@ -17,6 +17,11 @@
 			<option value="rider">rider</option>
 			<option value="driver">driver</option>
 			</select>
+			<label for="gender">Gender:</label>
+			<select id="gender" name="gender">
+			<option value="male">male</option>
+			<option value="female">female</option>
+			</select>
 			<input type="tel" id="phone" name="phone" placeholder="Enter your phone number" pattern="[0][5][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" title="Format: 05xxxxxxx" required/>
 			<input type="password" name="password" autocomplete="off" id="password" placeholder="Password" required/>
 			<input type="submit" value="Submit Form" />
@@ -31,6 +36,7 @@
 				const email = document.getElementById('email').value
 				const name = document.getElementById('name').value
 				const phone = document.getElementById('phone').value
+				const gender = document.getElementById('gender').value
 				const password = document.getElementById('password').value
 				const userType = document.getElementById('userType').value
 
@@ -43,6 +49,7 @@
 						email,
 						name,
 						phone,
+						gender,
 						userType,
 						password
 					})

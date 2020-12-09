@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema(
 		name: {type: String, required:true},
 		phone: {type: String},
 		userType: {type:String},
+		gender: {type:String},
 		//_rider:{type:mongoose.Schema.Types.ObjectId, ref:'Rider'},
 		//_driver:{type:mongoose.Schema.Types.ObjectId, ref:'Driver'},
 		password: { type: String, required: true }
