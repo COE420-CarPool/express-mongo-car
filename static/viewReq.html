@@ -26,6 +26,7 @@
 
     socket.on('request', addRequests)
     
+    var clickerson = request._id
 
     function addRequests(request){
         $("#requests").append(`<h4>  Requests from Riders </h4> 
@@ -34,19 +35,27 @@
         <p> Rider's gender: ${request.rider_gender}</p> 
         <p> Rider's name: ${request.rider_name}</p>
        
-        <button id="accept" class="btn btn-success">Accept & Confirm</button>
+        <button id="${clickerson}" class="btn btn-success">Accept & Confirm</button>
         
         `)
-        $('#requests').on('click','#accept', function () {
-            console.log(request)
-       
-});
+
+        const acceptRequest =  document.querySelector(`[id="${clickerson}"]`);
+        acceptRequest.addEventListener('click', e => { 
+          console.log(`Accepting --> ${request._id}`    );
+         Match(request)
+        });
 
 
 
     setTimeout(addRequests, 1000);
     }
     
+    socket.on('request', Match)
+
+    function Match(request) {
+        $.post('http://localhost:9999/Match', request)
+    }
+
 
     function getRequests(){
       $.get('http://localhost:9999/viewRequests', (data) => {

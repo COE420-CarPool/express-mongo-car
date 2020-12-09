@@ -151,11 +151,14 @@ app.post('/api/register', async (req, res) => {
 
 //--------------------------------- MESSAGES now
 
-app.get('/messages', (req, res) => {
+app.get('/messages', async (req, res) => {
+	let user = await User.findOne({_id:req.session.userId})
+	if (user.userType ==="rider"){
 	Message.find({},(err, messages)=> {
 	  res.send(messages);
-	  console.log("getting message")
-	})
+	  console.log("showing all messages to rider")
+	})}
+	else if (user.userType === "driver") { res.send("Not authorized!"); console.log ("a driver trying to view messages. not allowed.")}
   })
   
   app.post('/requestMatch', async (req, res) => {
@@ -180,11 +183,24 @@ app.get('/messages', (req, res) => {
 
   })
 
+  app.post('/Match', async (req, res) => {
+	if (req.session.isLoggedIn)
+	{ let user = await User.findOne ({_id : req.session.userId})
+	console.log('Driver who accepted Match is: ' + user.name)
+	const request = await Request.updateOne({ driver_id: req.session.userId }, { status: "confirmed" })
+	console.log("Request updated~~");
+	//let request = await Request.findOne({driver_id: user._id})
+	 // request.status = "confirmed"
+  }
+  })
+
   app.get('/viewRequests', async (req, res) => {
-	Request.find({},(err, requests)=> {
+	let user = await User.findOne({_id:req.session.userId})
+	if (user.userType === "driver"){
+	Request.find({'driver_id':req.session.userId},(err, requests)=> {
 		res.send(requests);
 		console.log("getting requests")
-  })
+  }) }
 })
   
   app.get('/messages/:user', (req, res) => {

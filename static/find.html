@@ -31,9 +31,9 @@
 
       //  var clicker = "ID" + Math.random().toString(16).slice(2)
      
-        
+        var clicky = message._id
         $("#messages").append(`
-        <div id=${message._id}>
+        
         <h4>Going to ${message.destination}</h4> 
         <p> Current Seat Capacity: ${message.seats} </p>
         <p> Departure time: ${message.departure} </p>
@@ -44,11 +44,11 @@
         <p> Posted by:  ${message.creator_name} </p>
         <p> Posted by (email):  ${message.creator_email} </p>
         <p> Posted by (phone):  ${message.creator_phone} </p>
-        <button id="clicky" class="btn btn-success">${message._id}</button>
-        </div>
+        <button id="${clicky}" class="btn btn-success">${message._id}</button>
+       
         
         `)
-$("#messsages").on('click', 'button', function() { console.log("crying")});
+    
         
       //  $("#messages").querySelector(`div[id="${message._id}"] > button`)
        // .addEventListener('click', () =>  console.log(message._id))
@@ -59,6 +59,12 @@ $("#messsages").on('click', 'button', function() { console.log("crying")});
          requestMatch(message)
         });
         }*/
+        const findDrive =  document.querySelector(`[id="${clicky}"]`);
+        findDrive.addEventListener('click', e => { 
+          console.log(`Requesting --> ${message._id}`    );
+          requestMatch(message)
+  });
+
     setTimeout(addMessages, 1000);
     }
 
