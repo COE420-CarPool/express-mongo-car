@@ -63,8 +63,8 @@
 
       <nav class="nav-menu d-none d-lg-block">
         <ul>
-          <li class=""><a href="index.html">Home</a></li>
-          <li class="active"><a href="login.html">Login</a></li>
+          <li class="active"><a href="index.html">Home</a></li>
+          <li><a href="login.html">Login</a></li>
           
          
         
@@ -80,7 +80,7 @@
   <!-- ======= Hero Section ======= -->
   <section id="hero" class="d-flex align-items-center">
     <div class="container" data-aos="zoom-out" data-aos-delay="100">
-      <h1>Welcome back,  <span>login now!</span>
+      <h1>Welcome,  <span>register now!</span>
       </h1>
       <h2>Find rides now on the AUS campus or find other riders to redeem your score for vouchers.</h2>
      <!--- <div class="d-flex">
@@ -92,34 +92,73 @@
 
 
 
-<div class="container" id="loggyDriv">
-    <h4 class="title" style="padding:30px;">Login to Your Existing Account</h4> 
- <form id="login" class="form-horizontal " data-aos="zoom-out" data-aos-delay="100" style="padding:20px 40px; border-radius: 50px;" >
-   <div class="form-group ">
-     <label class="control-label col-sm-2" for="email">Email:</label>
-     <div class="col-sm-10">
-       <input type="email" autocomplete="on" id="email" placeholder="Email" pattern="^[bg0-9]+@aus\.edu" title="Use an AUS student email! " />
-     </div>
-   </div>
-   <div class="form-group">
-     <label class="control-label col-sm-2" for="pwd" required="true">Password:</label>
-     <div class="col-sm-10">
-		<input type="password" autocomplete="off" id="password" placeholder="Password" />
-     </div>
-   </div>
-  
-   <div class="form-group">
-     <div class="col-sm-offset-2 col-sm-10">
-      	
-			<input type="submit" class="btn btn-secondary" value="Login" />
-       <br>
-             <div class="psw" id="hehehe" style="cursor: pointer; padding:25px;"><strong><a href="register.html">New User? Register Here</a></strong></div>
-     </div>
-   </div>
- </form>
- </div>
+<main id="main">
+    <section id="featured-services" class="featured-services">
+        <div class="container" data-aos="fade-up">
+          <div class="container" id="loggyDriv">
+              <h1>Register!</h1>
+    <form id="form-group" class="form-horizontal " data-aos="zoom-out" data-aos-delay="100"  style="padding:20px 40px; border-radius: 50px;">
+        <div class="form-group ">
+            <label class="control-label col-sm-2" for="email">Email:</label>
+            <div class="col-sm-10">
+                <input type="email" autocomplete="on" id="email" pattern="^[bg0-9]+@aus\.edu" title="Use an AUS student email! " name="email" placeholder="Use an AUS email" required />
+            </div>
+          </div>
+          <div class="form-group ">
+            <label class="control-label col-sm-2" for="name">Full Name:</label>
+            <div class="col-sm-10">
+                <input type="text" id="name" name="name" placeholder="Enter your name" required/>
+            </div>
+          </div>
+          <div class="form-group ">
+            <label class="control-label col-sm-2" for="userType">I am a:</label>
+            <div class="col-sm-10">
+                <select id="userType" name="userType">
+                <option value="rider">Rider</option>
+                <option value="driver">Driver</option>
+                </select>
+            </div>
+          </div>
+          <div class="form-group ">
+            <label class="control-label col-sm-2" for="gender">Gender:</label>
+            <div class="col-sm-10">
+                <select id="gender" name="gender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    </select>
+            </div>
+          </div>
+          <div class="form-group ">
+            <label class="control-label col-sm-2" for="phone">Phone No.:</label>
+            <div class="col-sm-10">
+                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" pattern="[0][5][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" title="Format: 05xxxxxxx" required/>
+            </div>
+          </div>
+          <div class="form-group ">
+            <label class="control-label col-sm-2" for="password">Password:</label>
+            <div class="col-sm-10">
+                <input type="password" name="password" autocomplete="off" id="password" placeholder="Password" required/>
+            </div>
+          </div>
+          
+       
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <input type="submit" class="btn btn-secondary"></button>
+              <br>
+                    <div class="psw" id="hehehe" style="cursor: pointer; padding:25px;"><strong><a href="login.html">Already have an account? Log in here</a></strong></div>
+            </div>
+          </div>
+       
+    </form>
+</div>
+        
+
+</div>
 
 
+</section>
+</main>
     
 <!-- ======= Footer ======= -->
 <footer id="footer">
@@ -162,6 +201,48 @@
 
 
 
+   
+  <script>
+    const gender = document.getElementById('gender').value
+    console.log(gender)
+    const form = document.getElementById('form-group')
+    form.addEventListener('submit', registerUser)
+    
+    async function registerUser(event) {
+        event.preventDefault()
+        const email = document.getElementById('email').value
+        const name = document.getElementById('name').value
+        const phone = document.getElementById('phone').value
+        const gender = document.getElementById('gender').value
+        const password = document.getElementById('password').value
+        const userType = document.getElementById('userType').value
+
+        const result = await fetch('/api/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email,
+                name,
+                phone,
+                gender,
+                userType,
+                password
+            })
+        }).then((res) => res.json())
+
+        if (result.status === 'ok') {
+            // everythign went fine
+            alert('Success')
+            return window.location.href = "login.html"
+            
+        } else {
+            alert('Email already exists. Please login with it.')
+        }
+    }
+</script>
+
 <div id="preloader"></div>
 <a href="#" class="back-to-top"><i class="icofont-simple-up"></i></a>
 
@@ -180,50 +261,4 @@
 <!-- Template Main JS File -->
 <script src="assets/js/main.js"></script>
 
-
-
-		<script>
-			const form = document.getElementById('login')
-			form.addEventListener('submit', login)
-
-			async function login(event) {
-				event.preventDefault()
-				const email = document.getElementById('email').value
-				const password = document.getElementById('password').value
-
-				const result = await fetch('/api/login', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						email,
-						password
-					})
-				}).then((res) => res.json())
-
-				 if (result.status === 'error'){
-					alert(result.error)
-				}
-				else if (result.status === 'rider') {
-					// everythign went fine
-					console.log('Got the token: ', result.data)
-					localStorage.setItem('token', result.data)
-					alert('Success')
-				
-				return window.location.href = "find.html" 
-
-				}
-				else if (result.status === 'driver') {
-					// everythign went fine
-					console.log('Got the token: ', result.data)
-					localStorage.setItem('token', result.data)
-					alert('Success')
-				
-				return window.location.href = "makeAvailable.html" 
-
-				}
-			}
-		</script>
-	
 </html>

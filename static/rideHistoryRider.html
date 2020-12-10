@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -63,67 +64,87 @@
         <ul>
           <li class=""><a href="index.html">Home</a></li>
           <li><a id="clickerson" style="cursor: pointer;">Log Out</a></li>
-          <li><a href="viewReq.html"> View Requests </a></li>
-          <li><a href="rideHistory.html"> Ride History </a></li>
-        </ul>
+          <li class="drop-down active"><a href=""> My Dashboard</a>
+              <ul>
+                 <li class="drop-down"><a href="myProfileRider.html"> Edit Profile</a></li>
+                     <li class="drop-down"><a href="ViewProfileRider.html"> View Profile</a></li>
+                         <li class="drop-down"><a href="find.html"> Get Matched</a></li>
+                             </ul>
+            
+                
+          </li>
+         
+
+       
       </nav><!-- .nav-menu -->
-      
 
     </div>
   </header>
+  
+  <br><br><br><br><br><br><br>
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+      <div class="container mb-4 main-container">
+          
+          <div class="row">
+              <div class="col-lg-3 pb-5">
+                  <!-- Account Sidebar-->
+                  <div class="author-card pb-1">
+                      <div class="author-card-cover" style="background-image: url(https://demo.createx.studio/createx-html/img/widgets/author/cover.jpg);"><a class="btn btn-style-1 btn-white btn-sm" href="#" data-toggle="tooltip" title="" data-original-title="You currently have 290 Reward points to spend"><i class="fa fa-award text-md" id="driverScore"></i>&nbsp;</a></div>
+                      <div class="author-card-profile">
+                          
+                          <div class="author-card-details">
+                              <h3 id="driverName" class="author-card-name text-lg"><span></span></h3><span class="author-card-position"></span>
+                              
+                          </div>
+                      </div>
+                  </div>
+                  <div class="wizard">
+                      <nav class="list-group list-group-flush">
+                          <a class="list-group-item active" href="#">
+                              <div class="d-flex justify-content-between align-items-center">
+                                  <div><i class="fa fa-shopping-bag mr-1 text-muted"></i>
+                                      <div class="d-inline-block font-weight-medium text-uppercase">Rides List</div>
+                                 
+                              </div>
+                              </div>
+                          </a>
+                          </a>
+                      </nav>
+                  </div>
+              </div>
+              <!-- Orders Table-->
+              <div class="col-lg-8 pb-5">
+                  <div class="d-flex justify-content-end pb-3">
+                      <div class="form-inline">
+                         
+                      </div>
+                  </div>
+                  <div id="" class="table-responsive">
+                      <table id="requests" class="table table-hover mb-0">
+                          <thead>
+                              <tr>
+                                  <th>Ride #</th>
+                                  <th>Destination</th>
+                                  <th>Pickup</th>
+                                  <th>Departure</th>
+                                  <th>Driver's Email</th>
+                                  <th>Driver's Phone</th>
+                                  <th>Status</th>
+                                  
+                              </tr>
+                          </thead>
+                          <tbody>
+                             
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </html>
 
-<body>
-<div class="container" style="margin-top:150px;">
-    <br>
-    <div class="jumbotron" style="border-radius:80px;">
-    
-        <h1 class="display-4">Post Message</h1>
-        <br>
-        <input type="text" id="destination" class="form-control" placeholder="Destination" required/>
-        <input type="time" id="departure" class="form-control" placeholder="Departure Time" required/>
-        <label  for="seats" class="col-form-label">Your current seat capacity: </label>
-        <select required="true" class="form-control" id="seats" name="seats">
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-      </select>
-      <label for="luggage" class="col-form-label">Do you accept luggage? </label>
-            <select required="true" class="form-control" id="luggage" name="luggage">
-                <option>Yes</option>
-                <option>No</option>
-            </select>
 
-            <label for="pickup" class="col-form-label">Pickup Point: </label>
-            <select class="form-control" id="pickup" name="pickup">
-                <option>ESB drop-off</option>
-                <option>Library roundabout</option>
-                <option>Student Center drop-off</option>
-                <option>Girl's Dorms</option>
-                <option>Boy's Dorms</option>
-                <option>Main Entrance drop-off</option>
-                <option>Physics Building parking</option>
-                <option>Girl's Supermarket</option>
-                <option>Sports Center parking</option>
-                <option>EB1 bus stop</option>
-            </select>
-        <br>
-
-        
-        <label for="platenum" class=" col-form-label">Plate Number: </label>
-        <input type="text"  data-toggle="validator" class="col-sm-10 form-control" id="platenum" name="platenum" placeholder="Enter your plate number"><br>
-        
-        <label for="notes" class=" col-form-label ">Any notes for the rider?</label>
-        <textarea id = "message" class="form-control" placeholder="Your Message Here"></textarea>
-        <br>
-        <button id="send" class="btn btn-success">Send</button>
-        
-      
-
-    </div>
-</div>
-
-<div id="preloader"></div>
+  <div id="preloader"></div>
   <a href="#" class="back-to-top"><i class="icofont-simple-up"></i></a>
 
   <!-- Vendor JS Files -->
@@ -149,26 +170,18 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/momentjs/2.13.0/moment.min.js"></script>
+
+
+
+</body>
+
 <script>
 
    var socket = io();
     $(() => {
-        $("#send").click(()=>{
-            sendMessage({
-              destination: $("#destination").val(),
-              seats: $("#seats").val(),
-              pickup: $("#pickup").val(),
-              departure: $("#departure").val(),
-              platenum: $("#platenum").val(),
-              message: $("#message").val()
-            
-              });
-              alert('You posted a message for other riders!')
-        })
-   
-
+       
       
-        //getMessages()
+        getRequests()
     })
 
     $(() =>{
@@ -184,33 +197,47 @@
           
     })
 
-    socket.on('message', addMessages)
+    socket.on('request', rideHistory)
     socket.on('message',logOut)
     socket.on(logOut)
+    function logOut(){
+    $.post('http://localhost:3222/logOut', message)
+   }
 
-    /*function addMessages(message){
-        $("#messages").append(`<h4> Going to ${message.destination} </h4> 
-        <p> Current Seat Capacity: ${message.seats} </p>
-        <p> Departure time: ${message.departure} </p>
-        <p> Meeting Point: ${message.pickup} </p>
-        <p> Car Plate Number: ${message.platenum} </p>
-        <p> Driver's message:${message.message} </p>
-        <p> Posted at:  ${message.time} </p>`)
-       // console.log(message)
-    }*/
+    function addRequests(request){
+        $("#requests").append(`
+        
+            <tr>
+                <td><a class="navi-link" href="#order-details" data-toggle="modal">${request._id}</a></td>
+                <td> ${request.driver_destination}</td>
+                <td> ${request.driver_pickup}</td>
+                <td> ${request.driver_departure}</td>
+                <td> ${request.driver_email}</td>
+                <td> ${request.driver_phone}</td>
+              
+             <td><span class="badge badge-success m-0">${request.status}</span></td>
+        </tr>
+        
+        
+        `)
 
-    function getMessages(){
-      $.get('http://localhost:3222/messages', (data) => {
-        data.forEach(addMessages);
+        $("#driverName").append(`
+       <h3 class="section-title"> <span>${request.rider_name}, Rider </span></h3>
+        
+        `)
+
+
+    setTimeout(rideHistory, 1000);
+    }
+    
+
+    function getRequests(){
+      $.get('http://localhost:3222/rideHistory', (data) => {
+        data.forEach(addRequests);
       })
     }
 
-   function logOut(){
-    $.post('http://localhost:3222/logOut', message)
-   }
-    function sendMessage(message){
-      $.post('http://localhost:3222/messages', message)
-    }
+    
 </script>
 </body>
 </html>

@@ -34,46 +34,13 @@ app.use(session({
 }));
 
 
-app.post('/api/change-password', async (req, res) => {
-	const { token, newpassword: plainTextPassword } = req.body
-
-	if (!plainTextPassword || typeof plainTextPassword !== 'string') {
-		return res.json({ status: 'error', error: 'Invalid password' })
-	}
-
-	if (plainTextPassword.length < 5) {
-		return res.json({
-			status: 'error',
-			error: 'Password too small. Should be atleast 6 characters'
-		})
-	}
-
-	try {
-		const user = jwt.verify(token, JWT_SECRET)
-
-		const _id = user.id
-
-		const password = await bcrypt.hash(plainTextPassword, 10)
-
-		await User.updateOne(
-			{ _id },
-			{
-				$set: { password }
-			}
-		)
-		res.json({ status: 'ok' })
-	} catch (error) {
-		console.log(error)
-		res.json({ status: 'error', error: ';))' })
-	}
-})
 
 app.post('/api/login', async (req, res) => {
 	const { email, password } = req.body
 	let user = await User.findOne({ email: req.body.email })
 
 	if (!user) {
-		return res.json({ status: 'error', error: 'Invalid email/password' })
+		return res.json({ status: 'error', error: 'User does not exist' })
 	}
 
 	else if (await bcrypt.compare(password, user.password)) {
@@ -98,6 +65,9 @@ app.post('/api/login', async (req, res) => {
 	     }
 		
 	}
+	else {
+		return res.json({ status: 'error', error: 'Wrong password' })
+	}
 
 
 })
@@ -108,8 +78,8 @@ app.get('/dashboard', async (req, res) =>
 })
  
 app.post('/api/register', async (req, res) => {
-	const { email, name, phone, userType, password: plainTextPassword } = req.body
-
+	const { email, name, phone, gender, userType, password: plainTextPassword } = req.body
+	const score = 0
 	if (!email || typeof email !== 'string') {
 		return res.json({ status: 'error', error: 'Invalid email' })
 	}
@@ -131,7 +101,9 @@ app.post('/api/register', async (req, res) => {
 		const response = await User.create({
 			email,
 			name,
+			gender,
 			phone,
+			score,
 			userType,
 			password
 		})
@@ -151,6 +123,13 @@ app.post('/api/register', async (req, res) => {
 
 //--------------------------------- MESSAGES now
 
+app.post('/logOut', async (req, res) => {
+	console.log("logout beign callleeddd")
+	if (req.session.isLoggedIn) { req.session.isLoggedIn = false
+	console.log("User logged out!")}
+		else {console.log("huuuh?")}
+
+})
 app.get('/messages', async (req, res) => {
 	let user = await User.findOne({_id:req.session.userId})
 	if (user.userType ==="rider"){
@@ -172,10 +151,20 @@ app.get('/messages', async (req, res) => {
 		request.rider_email = user.email,
 		request.rider_name = user.name,
 		request.rider_phone = user.phone,
+		request.rider_gender = user.gender,
 		request.driver_id = req.body.creator_id,
 		request.driver_email = req.body.creator_email,
 		request.driver_phone = req.body.creator_phone,
 		request.driver_name = req.body.creator_name,
+		request.driver_destination = req.body.destination,
+		request.driver_pickup = req.body.pickup,
+		request.driver_platenum = req.body.platenum,
+		request.driver_departure = req.body.departure,
+		request.driver_message = req.body.message,
+		request.driver_time = req.body.time,
+		request.driver_seats = req.body.seats,
+		request.driver_score = req.body.score,
+		
 		request.status = "pending";
 	  var request = await request.save()
 	  
@@ -185,10 +174,17 @@ app.get('/messages', async (req, res) => {
 
   app.post('/Match', async (req, res) => {
 	if (req.session.isLoggedIn)
-	{ let user = await User.findOne ({_id : req.session.userId})
-	console.log('Driver who accepted Match is: ' + user.name)
-	const request = await Request.updateOne({ driver_id: req.session.userId }, { status: "confirmed" })
+	{ 
+	let user = await User.findOne ({_id : req.session.userId}) 
+	if (user.userType === "driver"){
+	//console.log('Driver who accepted Match is: ' + user.name)
+	
 	console.log("Request updated~~");
+	const user = await User.updateOne({ _id: req.session.userId}, { $inc: { score: 1 } })
+	const request = await Request.updateOne({ driver_id: req.session.userId }, { status: "confirmed" })
+	const request2 = await Request.updateOne({ driver_id: req.session.userId }, { $inc: { driver_score: 1 } })
+
+	}
 	//let request = await Request.findOne({driver_id: user._id})
 	 // request.status = "confirmed"
   }
@@ -201,7 +197,28 @@ app.get('/messages', async (req, res) => {
 		res.send(requests);
 		console.log("getting requests")
   }) }
+  else if (user.userType === "rider"){
+	console.log("rider triyng to view requests. not allowed!")
+  }
 })
+
+app.get('/rideHistory', async (req, res) => {
+	let user = await User.findOne({_id:req.session.userId})
+	if (user.userType ==="driver"){
+	Request.find({'driver_id':req.session.userId, 'status':'confirmed'},(err, requests)=> {
+		res.send(requests);
+		console.log("getting ride history to driver") 
+
+  })  }
+  else if (user.userType === "rider") {
+	Request.find({'rider_id':req.session.userId, 'status':'confirmed'},(err, requests)=> {
+		res.send(requests);
+		console.log("getting ride history to rider") 
+
+  }) 
+  }
+
+  })
   
   app.get('/messages/:user', (req, res) => {
 	var user = req.params.user
@@ -217,13 +234,16 @@ app.get('/messages', async (req, res) => {
 	  if (req.session.isLoggedIn) 
 	{
 		let user = await User.findOne({ _id: req.session.userId })
-		console.log(user)
+		if (user.userType === "driver") {
 	try{
 	  var message = new Message(req.body);
 		message.creator_id = user._id
 		message.creator_email = user.email
 		message.creator_name = user.name
 		message.creator_phone = user.phone
+		message.creator_gender = user.gender 
+		message.score = user.score
+		console.log(message.creator_gender)
 	  var savedMessage = await message.save()
 		console.log('saved');
   
@@ -241,7 +261,7 @@ app.get('/messages', async (req, res) => {
 	finally{
 	  console.log('Message Posted')
 	}
-}
+} }
   })
   
 
@@ -250,7 +270,7 @@ app.get('/messages', async (req, res) => {
   })
 //------------
 
-var server = http.listen(9999, () => {
+var server = http.listen(3222, () => {
 	console.log('server is running on port', server.address().port);
   });
   

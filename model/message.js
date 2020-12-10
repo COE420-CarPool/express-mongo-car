@@ -8,7 +8,11 @@ const MessageSchema = new mongoose.Schema (
         creator_id: {type:String, unique:true},
         creator_name: {type:String},
         creator_email: {type:String},
+        creator_gender: {type:String},
+        creator_phone: {type:String},
+      
         destination: {type: String },
+        score: {type:Number},
         seats:  {type: String },
         departure:  {type: String },
         pickup:  {type: String },

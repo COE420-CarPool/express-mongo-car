@@ -63,16 +63,14 @@
       <nav class="nav-menu d-none d-lg-block">
         <ul>
           <li class="active"><a href="index.html">Home</a></li>
-          <li><a href="myProfile.html">My Profile</a></li>
-          
-          
+          <li><a id="clickerson" style="cursor: pointer;">Log Out</a></li>
         
           <li class="drop-down"><a href="">Dashboard</a>
             
                 <ul>
                   <li class="drop-down"><a href="ViewProfileRider.html">View Profile</a></li>
                   <li class="drop-down"><a href="myProfileRider.html">Edit Profile</a></li>
-                  <li class="drop-down"><a href="Ticketing_Rider">Ticketing History</a></li>
+                  <li class="drop-down"><a href="rideHistoryRider.html">Ride History</a></li>
                  
                 </ul>
            
@@ -88,9 +86,9 @@
   <!-- ======= Hero Section ======= -->
   <section id="hero" class="d-flex align-items-center">
     <div class="container" data-aos="zoom-out" data-aos-delay="100">
-      <h1>Pick from the map of <span>available drivers</spa>
+      <h1>Pick from the list of <span>available drivers</spa>
       </h1>
-      <h2>Drivers are shown on the map below</h2>
+      <h2>Drivers are shown on the list below</h2>
      <!--- <div class="d-flex">
         <a href="#about" class="btn-get-started scrollto">How It Works</a>
         
@@ -108,7 +106,7 @@
         <div class="section-title">
      
           <h3>Find a <span>Ride!</span></h3>
-          <p>Available drivers will be visible as pop-ups on the map. Choose drivers by clicking on the match button. </p>
+          <p>Available drivers will be visible in the below list. Choose drivers by clicking on the match button. </p>
 
           
    
@@ -129,8 +127,8 @@
   <!--<script src="map.js"></script>  -->
 </main>
        
-
 <div id="messages"></div>
+  
   <!-- ======= Footer ======= -->
   <footer id="footer">
 
@@ -195,7 +193,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/momentjs/2.13.0/moment.min.js"></script>
 
 <script>
 
@@ -203,60 +201,99 @@
     $(() => {
        
       
-        logSubmit(event)
+       // logSubmit(event)
     })
+
+    $(() =>{
+      $(" nav ul li > #clickerson").click(() =>{
+         
+          console.log("TRIYNG TO LOG OUT")
+          alert('You are logging out.')
+          
+         return window.location.href="index.html"
+        
+          })
+          logOut()
+          
+    })
+
+    function logOut(){
+    $.post('http://localhost:3222/logOut', message)
+   }
 
     socket.on('message', addMessages)
     socket.on('message', requestMatch)
 
     function addMessages(message){
-
-      //  var clicker = "ID" + Math.random().toString(16).slice(2)
-     
         var clicky = message._id
+        var time = message.time
+        var thisMoment = moment.utc(time).fromNow()
+        console.log(thisMoment)
         $("#messages").append(`
-        
-        <h4>Going to ${message.destination}</h4> 
-        <p> Current Seat Capacity: ${message.seats} </p>
-        <p> Departure time: ${message.departure} </p>
-        <p> Meeting Point: ${message.pickup} </p>
-        <p> Car Plate Number: ${message.platenum} </p>
-        <p> Driver's message:${message.message} </p>
-        <p> Posted at:  ${message.time} </p>
-        <p> Posted by:  ${message.creator_name} </p>
-        <p> Posted by (email):  ${message.creator_email} </p>
-        <p> Posted by (phone):  ${message.creator_phone} </p>
-        <button id="${clicky}" class="btn btn-success">${message._id}</button>
-       
+
+        <div class="card-deck">
+  <div class="card" data-aos="fade-up">
+    <div class="card-body">
+      <h1 class="card-title">Going to ${message.destination}</h1>
+      <button id="${clicky}" class="btn btn-success">Click to Match</button>
+      <p class="card-text"><small class="text-muted">Driver's Name: ${message.creator_name}</small></p>
+      <p class="card-text"><small class="text-muted">Driver's Email: ${message.creator_email}</small></p>
+      <p class="card-text"><small class="text-muted">Driver's Gender: ${message.creator_gender}</small></p>
+      <p class="card-text"><small class="text-muted"> Notes: "${message.message}"</small></p>
+
+      <p class="card-text"><small class="text-muted">Created ${thisMoment}</small></p>
+    </div>
+  </div>
+
+        <div class="col-sm-6">
+          <div class="card">
+            <div data-aos="fade-up" class="card-body">
+              <h5 class="card-title">Details:</h5>
+            
+              <p class="card-text"> Current Seat Capacity: ${message.seats} </p>
+              <p class="card-text"> Departure time: ${message.departure} </p>
+              <p class="card-text"> Meeting Point: ${message.pickup} </p>
+              <p class="card-text"> Car Plate Number: ${message.platenum} </p>
+              
+              
+              <p class="card-text"> Posted by (email):  ${message.creator_email} </p>
+              <p class="card-text"> Posted by (phone):  ${message.creator_phone} </p>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+     
         
         `)
     
         
         const findDrive =  document.querySelector(`[id="${clicky}"]`);
         findDrive.addEventListener('click', e => { 
+          document.querySelector(`[id="${clicky}"]`).innerHTML = "Request sent!";
           console.log(`Requesting --> ${message._id}`    );
           requestMatch(message)
   });
 
-    setTimeout(addMessages, 1000);
+  setTimeout(addMessages, 1000);
     }
 
    
     //$("#match").click(()=>{console.log("CLICK TO MATCHHHHH")})
     
     function requestMatch(message) {
-        $.post('http://localhost:9999/requestMatch', message)
+        $.post('http://localhost:3222/requestMatch', message)
     }
 function logSubmit(event){
     var x = document.getElementById("messages");
         if (x.style.display === "none") {
           x.style.display = "block";
-        } else {
-          x.style.display = "none";
-        } }
+        } 
+     getMessages()
+    }
 
     function getMessages(){
-      $.get('http://localhost:9999/messages', (data) => {
+      $.get('http://localhost:3222/messages', (data) => {
         data.forEach(addMessages);
   
       })
@@ -265,9 +302,11 @@ function logSubmit(event){
     form.addEventListener('#buttony', logSubmit);
 
     function sendMessage(message){
-      $.post('http://localhost:9999/messages', message)
+      $.post('http://localhost:3222/messages', message)
     }
 
 </script>
+
+
 </body>
 </html>
